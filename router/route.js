@@ -1,27 +1,39 @@
 // const { login } = require('../validation/validation');
 // const { register } = require('../validation/validation');
-const { loginQuery, registerQuery } = require('../database/querry')
+const shortid = require('shortid')
+const { loginQuery, registerQuery, organizationCheckQuery
+
+
+ } = require('../database/query')
 const {connection_sql} = require('../database/sql_connection')
 const express = require('express')
 const app = express()
+const session = require('express-session')
 const router = express.Router()
 const bodyParser = require('body-parser');
 const {hashPassword  }= require('../security/password_hash')
 const bcrypt = require('bcrypt')
-// const session = require('express-session')
+router.use(session({
+  secret: 'abdjjdirgnkszvvk',
+  resave: true,
+  saveUninitialized: true
+}))
 
+ 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 router.get('/register',(req,res)=>{
     res.render('register')
-  })
-    router.post('/register',async (req,res) => { // validated the register data 
+}) 
+
+  router.post('/register',async (req,res) => { // validated the register data 
     // const reg_data = register.body.validate(req.body)
 
     const {name, email , password }  = req.body
     const salt = await bcrypt.genSalt();
     const passHash = await hashPassword(password,salt); // used hashPassword to bcrypt password 
+    const userID = shortid.generate();
     
     console.log(salt)
     console.log(passHash)
@@ -32,27 +44,26 @@ router.get('/register',(req,res)=>{
         res.send("email allready exist")
       }
       else{
-        const insertQuery = registerQuery(name, email, password, passHash, salt);; 
+        const insertQuery = registerQuery(userID, name, email, password, passHash, salt);; 
     connection_sql.query(insertQuery, (err, result) => { // if no error then the insert query will execute and add the user to database
       if (err) throw err;
       console.log("User data inserted successfully");
-    
+      
+      res.send("User registerd Successfully")
 
     })
       }
     })
 
-    res.send("User registerd Successfully")
+    
  
     // console.log(reg_data)
    })
 
 
-   router.get('/login', (req, res) => { //rendered the login page
+router.get('/login', (req, res) => { //rendered the login page
     res.render('login');
-
-
-  });
+});
   
 
   router.post('/login', (req, res) => { 
@@ -67,13 +78,29 @@ router.get('/register',(req,res)=>{
         } else {
         
           if (result.length > 0) {
-            const { hash , salt } = result[0];  
+            const { userID, hash , salt  } = result[0];  
 
             const inputHash = await hashPassword(password, salt);
            
             if (inputHash === hash) {
+              req.session.userID = userID;
 
-                res.render('dashboard')
+              connection_sql.query(organizationCheckQuery(userID), (err,result)=>{
+                 
+                if (err) {
+                    console.log(err);
+                    res.send('An error occurred');
+                   }
+                   else{
+                    if(result.length>0){
+                      res.render('dashboard')
+                    }
+                    
+                    res.redirect('/organisation-register')
+                   }
+
+              })
+
               
             } else {
               res.send('Email or password is incorrect');
@@ -87,5 +114,15 @@ router.get('/register',(req,res)=>{
    
       
     }); 
+
+
+    router.post('/organisation-register',(req,res)=>{
+      const { userID } = req.session;
+
+     
+
+
+    }
+    )
 
    module.exports=router
