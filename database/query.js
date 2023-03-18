@@ -9,7 +9,7 @@ const registerQuery = (userID, name, email, password, passHash, salt)  => {
   };
 
 const organizationCheckQuery=(userID)=>{
-  return`SELECT * FROM user WHERE userID='${userID}'`
+  return`SELECT * FROM organization WHERE userID='${userID}'`
 }
 
 const organisationRegisterQuery =(orgID, name, email, userID) =>{
