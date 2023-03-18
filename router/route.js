@@ -1,10 +1,7 @@
 // const { login } = require('../validation/validation');
 // const { register } = require('../validation/validation');
 const shortid = require('shortid')
-const { loginQuery, registerQuery, organizationCheckQuery
-
-
- } = require('../database/query')
+const { loginQuery, registerQuery, organizationCheckQuery, organisationRegisterQuery} = require('../database/query')
 const {connection_sql} = require('../database/sql_connection')
 const express = require('express')
 const app = express()
@@ -65,7 +62,6 @@ router.get('/login', (req, res) => { //rendered the login page
     res.render('login');
 });
   
-
   router.post('/login', (req, res) => { 
     // const data = login.body.validate(req.body)
      const { email, password } = req.body
@@ -90,14 +86,13 @@ router.get('/login', (req, res) => { //rendered the login page
                 if (err) {
                     console.log(err);
                     res.send('An error occurred');
-                   }
-                   else{
+                } else {
                     if(result.length>0){
-                      res.render('dashboard')
+                      res.render('dashboard');
+                    } else {
+                      res.redirect('/organisation-register');
                     }
-                    
-                    res.redirect('/organisation-register')
-                   }
+                }
 
               })
 
@@ -113,16 +108,35 @@ router.get('/login', (req, res) => { //rendered the login page
       })
    
       
-    }); 
+}); 
 
 
-    router.post('/organisation-register',(req,res)=>{
-      const { userID } = req.session;
 
+    router.get('/organisation-register',(req,res)=>{
+    res.render('organisationRegister')
+     })
      
+     router.post('/organisation-register',(req,res)=>{
+      const userID = req.session.userID;
+      const {name, email }  = req.body
+      const orgID = shortid.generate();
+      
 
 
-    }
-    )
+      connection_sql.query(organisationRegisterQuery(orgID, name, email, userID), (err,result)=>{
+        if (err) {
+          console.log(err);
+          res.send('An error occurred');
+        } else {
+          res.render('dashboard');
+
+
+        }
+
+      } )
+
+
+
+     })
 
    module.exports=router
