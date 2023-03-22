@@ -113,6 +113,7 @@ router.get('/login', (req, res) => { //rendered the login page
 
 
     router.get('/organisation-register',(req,res)=>{
+
     res.render('organisationRegister')
      })
      
@@ -137,6 +138,25 @@ router.get('/login', (req, res) => { //rendered the login page
 
 
 
-     })
+     }) 
+
+     router.get('/dashboard', (req, res) => {
+      const userID = req.session.userID;
+      console.log(userID)
+      const fetchQuery1 = `SELECT * FROM organization WHERE userID='${userID}'`;
+      connection_sql.query(fetchQuery1, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send('An error occurred');
+        } else {
+          console.log(result)
+          // res.render('dashboard');
+          const organizations = result.map(row => row.name);
+          res.render('dashboard', { organizations : result });
+          
+
+        }
+      });
+    });
 
    module.exports=router
