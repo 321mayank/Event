@@ -74,12 +74,13 @@ router.get('/login', (req, res) => { //rendered the login page
         } else {
         
           if (result.length > 0) {
-            const { userID, hash , salt  } = result[0];  
+            const { userID,name , hash , salt  } = result[0];  
 
             const inputHash = await hashPassword(password, salt);
            
             if (inputHash === hash) {
-              req.session.userID = userID;
+              req.session.userID = userID
+              req.session.Uname = name
 
               connection_sql.query(organizationCheckQuery(userID), (err,result)=>{
                  
@@ -88,7 +89,7 @@ router.get('/login', (req, res) => { //rendered the login page
                     res.send('An error occurred');
                 } else {
                     if(result.length>0){
-                      res.render('dashboard');
+                      res.redirect('/home');
                     } else {
                       res.redirect('/organisation-register');
                     }
@@ -129,7 +130,7 @@ router.get('/login', (req, res) => { //rendered the login page
           console.log(err);
           res.send('An error occurred');
         } else {
-          res.render('dashboard');
+          res.redirect('/home');
 
 
         }
@@ -140,7 +141,7 @@ router.get('/login', (req, res) => { //rendered the login page
 
      }) 
 
-     router.get('/dashboard', (req, res) => {
+     router.get('/home', (req, res) => {
       const userID = req.session.userID;
       console.log(userID)
       const fetchQuery1 = `SELECT * FROM organization WHERE userID='${userID}'`;
@@ -149,14 +150,28 @@ router.get('/login', (req, res) => { //rendered the login page
           console.log(err);
           res.send('An error occurred');
         } else {
-          console.log(result)
-          // res.render('dashboard');
           const organizations = result.map(row => row.name);
-          res.render('dashboard', { organizations : result });
+          res.render('home', { organizations : result });
           
 
         }
       });
     });
+
+    router.get('/addOrganisation', (req,res)=>{
+      res.render('addOrganisation')
+      res.send ("success")
+    })
+
+
+    router.get('/:orgName', (req, res) => {
+      const name = req.session.Uname;
+      const orgName = req.params.orgName;
+      res.redirect(`/${name}/${orgName}`);
+    });
+
+
+
+
 
    module.exports=router
