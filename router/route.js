@@ -81,6 +81,7 @@ router.get('/login', (req, res) => { //rendered the login page
             if (inputHash === hash) {
               req.session.userID = userID
               req.session.Uname = name
+              req.session.email = email
 
               connection_sql.query(organizationCheckQuery(userID), (err,result)=>{
                  
@@ -163,6 +164,13 @@ router.get('/login', (req, res) => { //rendered the login page
       res.send ("success")
     })
 
+    router.get('/profile',(req,res)=>{
+      const name = req.session.Uname;
+      const email =  req.session.email
+      console.log(name,email)
+      res.render('profile', { name: name, email: email });
+    })
+
 
     router.get('/:orgName', (req, res) => {
       const name = req.session.Uname;
@@ -171,6 +179,8 @@ router.get('/login', (req, res) => { //rendered the login page
     });
 
 
+   
+    
 
 
 
