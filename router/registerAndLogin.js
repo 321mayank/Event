@@ -6,11 +6,11 @@ const {connection_sql} = require('../database/sql_connection')
 const express = require('express')
 const app = express()
 const session = require('express-session')
-const router = express.Router()
+const registerAndLogin_router = express.Router()
 const bodyParser = require('body-parser');
 const {hashPassword  }= require('../security/password_hash')
 const bcrypt = require('bcrypt')
-router.use(session({
+registerAndLogin_router.use(session({
   secret: 'abdjjdirgnkszvvk',
   resave: true,
   saveUninitialized: true
@@ -20,11 +20,11 @@ router.use(session({
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-router.get('/register',(req,res)=>{
+registerAndLogin_router.get('/register',(req,res)=>{
     res.render('register')
 }) 
 
-  router.post('/register',async (req,res) => { // validated the register data 
+  registerAndLogin_router.post('/register',async (req,res) => { // validated the register data 
     // const reg_data = register.body.validate(req.body)
 
     const {name, email , password }  = req.body
@@ -58,11 +58,11 @@ router.get('/register',(req,res)=>{
    })
 
 
-router.get('/login', (req, res) => { //rendered the login page
+registerAndLogin_router.get('/login', (req, res) => { //rendered the login page
     res.render('login');
 });
   
-  router.post('/login', (req, res) => { 
+  registerAndLogin_router.post('/login', (req, res) => { 
     // const data = login.body.validate(req.body)
      const { email, password } = req.body
       const fetchQuery = loginQuery(email);
@@ -114,74 +114,8 @@ router.get('/login', (req, res) => { //rendered the login page
 
 
 
-    router.get('/organisation-register',(req,res)=>{
-
-    res.render('organisationRegister')
-     })
-     
-     router.post('/organisation-register',(req,res)=>{
-      const userID = req.session.userID;
-      const {name, email }  = req.body
-      const orgID = shortid.generate();
-      
-
-
-      connection_sql.query(organisationRegisterQuery(orgID, name, email, userID), (err,result)=>{
-        if (err) {
-          console.log(err);
-          res.send('An error occurred');
-        } else {
-          res.redirect('/home');
-
-
-        }
-
-      } )
-
-
-
-     }) 
-
-     router.get('/home', (req, res) => {
-      const userID = req.session.userID;
-      console.log(userID)
-      const fetchQuery1 = `SELECT * FROM organization WHERE userID='${userID}'`;
-      connection_sql.query(fetchQuery1, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.send('An error occurred');
-        } else {
-          const organizations = result.map(row => row.name);
-          res.render('home', { organizations : result });
-          
-
-        }
-      });
-    });
-
-    router.get('/addOrganisation', (req,res)=>{
-      res.render('addOrganisation')
-      res.send ("success")
-    })
-
-    router.get('/profile',(req,res)=>{
-      const name = req.session.Uname;
-      const email =  req.session.email
-      console.log(name,email)
-      res.render('profile', { name: name, email: email });
-    })
-
-
-    router.get('/:orgName', (req, res) => {
-      const name = req.session.Uname;
-      const orgName = req.params.orgName;
-      res.redirect(`/${name}/${orgName}`);
-    });
+ 
 
 
    
-    
-
-
-
-   module.exports=router
+   module.exports = registerAndLogin_router
