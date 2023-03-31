@@ -1,10 +1,13 @@
 
 const {connection_sql} = require('../database/sql_connection')
 const express = require('express')
+const shortid = require('shortid')
 const app = express()
 const session = require('express-session')
 const home_router = express.Router()
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser' );
+const {organisationRegisterQuery} = require('../database/query')
+
 home_router.use(session({
   secret: 'abdjjdirgnkszvvk',
   resave: true,
@@ -19,12 +22,11 @@ home_router.get('/organisation-register',(req,res)=>{
      
      home_router.post('/organisation-register',(req,res)=>{
       const userID = req.session.userID;
+      console.log(userID)
       const {name, email }  = req.body
       const orgID = shortid.generate();
       
-
-
-      connection_sql.query(organisationRegisterQuery(orgID, name, email, userID), (err,result)=>{
+      connection_sql.query (organisationRegisterQuery(orgID, name, email, userID), (err,result)=>{
         if (err) {
           console.log(err);
           res.send('An error occurred');
@@ -50,7 +52,6 @@ home_router.get('/organisation-register',(req,res)=>{
           res.send('An error occurred');
         } else {
           if (result.length > 0) {
-          console.log(result)
           const organizations = result.map(row => ({ orgID: row.orgID, name: row.name }));
           res.render('home', { organizations : result });
           }else {

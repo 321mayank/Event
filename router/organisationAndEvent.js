@@ -13,8 +13,7 @@ organisationAndEvent_router.use(session({
 
 
     organisationAndEvent_router.get('/addOrganisation', (req,res)=>{
-      res.render('addOrganisation')
-      res.send ("success")
+      res.render('addOrganisation') 
     })
 
     organisationAndEvent_router.get('/profile',(req,res)=>{
@@ -32,26 +31,31 @@ organisationAndEvent_router.use(session({
     });
     const name = session.Uname;
                           
-    // organisationAndEvent_router.get(`/:name/:orgName`, (req ,res)=>{
-    //   const {orgName } = req.params;
-    //   const orgID = req.session.orgID;
-    //   const eventCheckQuery = `SELECT * FROM event WHERE orgID'${orgID}'`;
-    //   connection_sql.query(eventCheckQuery, (err,result)=>{
+    organisationAndEvent_router.get(`/:name/:orgName`, (req ,res)=>{
+      const {orgName } = req.params;
+      const orgID = req.session.orgID;
+      const eventCheckQuery = `SELECT * FROM event WHERE orgID='${orgID}'`;
+      connection_sql.query(eventCheckQuery, (err,result)=>{
                  
-    //     if (err) {
-    //         console.log(err);
-    //         res.send('An error occurred'); 
-    //     } else {
-    //         if(result.length>0){
-    //           res.redirect('/');
-    //         } else {
-    //           res.render('/EventRegistration');
-    //         }
-    //     }
+        if (err) {
+            console.log(err);
+            res.send('An error occurred'); 
+        } else {
+            if(result.length>0){
+              res.send("h");
+            } else {
+              res.render('EventRegistration');
+            }
+        }
 
-    //   })
+      })
       
-    // })
+    })
+
+
+    organisationAndEvent_router.get('/EventRegistration',(req,res)=>{
+      req.render('EventRegistration')
+    })
 
     
    module.exports = organisationAndEvent_router

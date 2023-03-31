@@ -16,11 +16,12 @@ app.get('/', (req, res) => { //rendered the login page
 
 
 app.use('/',registerAndLogin_router)
-app.use('/',organisationAndEvent_router)
+
 app.use('/',home_router)
-app.get('/:name/home',(req,res)=>{
-  res.render('home')
-})
+app.use('/',organisationAndEvent_router)
+// app.get('/:name/home',(req,res)=>{
+//   res.render('home')
+// })
 
 
 app.listen(3000, () => {
