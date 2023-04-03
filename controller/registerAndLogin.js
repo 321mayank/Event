@@ -3,14 +3,14 @@ const { loginQuery, registerQuery, organizationCheckQuery, organisationRegisterQ
 const {connection_sql} = require('../database/sql_connection')
 const {hashPassword }= require('../security/password_hash')
 const bcrypt = require('bcrypt')
+const {register_valid }= require('../validation/validation')
 
 const register_render = (req ,res ) => {
     res.render('register')
 }
 
 const register = async (req ,res, next) => {
-    res.render('register')
-
+  const data = register_valid.body.validate(req.body)
     const {name, email , password }  = req.body
     const salt = await bcrypt.genSalt();
     const passHash = await hashPassword(password,salt); // used hashPassword to bcrypt password 

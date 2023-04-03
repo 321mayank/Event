@@ -22,4 +22,4 @@ organisationAndEvent_router.post('/EventRegistration',eventRegistration)
 
 
     
-   module.exports = organisationAndEvent_router
+module.exports = organisationAndEvent_router
