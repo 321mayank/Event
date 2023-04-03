@@ -1,0 +1,103 @@
+const shortid = require('shortid')
+const { loginQuery, registerQuery, organizationCheckQuery, organisationRegisterQuery} = require('../database/query')
+const {connection_sql} = require('../database/sql_connection')
+const {hashPassword }= require('../security/password_hash')
+const bcrypt = require('bcrypt')
+
+const register_render = (req ,res ) => {
+    res.render('register')
+}
+
+const register = async (req ,res, next) => {
+    res.render('register')
+
+    const {name, email , password }  = req.body
+    const salt = await bcrypt.genSalt();
+    const passHash = await hashPassword(password,salt); // used hashPassword to bcrypt password 
+    const userID = shortid.generate();
+    
+    console.log(salt)
+    console.log(passHash)
+
+    const checkQuery = `SELECT * FROM user WHERE email='${email}'`
+    connection_sql.query(checkQuery,(err,sql_value)=>{ // checking if email allready exist 
+      if (sql_value.length>0) {
+        res.send("email allready exist")
+      }
+      else{
+        const insertQuery = registerQuery(userID, name, email, password, passHash, salt);; 
+    connection_sql.query(insertQuery, (err, result) => { // if no error then the insert query will execute and add the user to database
+      if (err) throw err;
+      console.log("User data inserted successfully");
+      
+      res.send("User registerd Successfully")
+
+    })
+      }
+    })
+
+}
+
+
+const login_render = (req ,res ) => {
+    res.render('login')
+}
+
+const login = (req, res) => { 
+    // const data = login.body.validate(req.body)
+     const { email, password } = req.body
+     console.log(email)
+     
+      const fetchQuery = loginQuery(email);
+      connection_sql.query(fetchQuery, async  (err,result)=>{
+        
+        if (err) {
+          console.log(err);
+          res.send('An error occurred');
+        } else {
+        
+          if (result.length > 0) {
+            const { userID,name , hash , salt  } = result[0];  
+
+            const inputHash = await hashPassword(password, salt);
+           
+            if (inputHash === hash) {
+              req.session.userID = userID
+              req.session.Uname = name
+              req.session.email = email
+
+              connection_sql.query(organizationCheckQuery(userID), (err,result)=>{
+                 
+                if (err) {
+                    console.log(err);
+                    res.send('An error occurred');
+                } else {
+                    if(result.length>0){
+                      res.redirect('/home');
+                    } else {
+                      res.redirect('/organisation-register');
+                    }
+                }
+
+              })
+
+              
+            } else {
+              res.send('Email or password is incorrect');
+            }
+          } else {
+            res.send('Email or password is incorrect');
+          }
+
+        }
+      })
+   
+}
+
+
+module.exports={
+    register_render,
+    register,
+    login_render,
+    login
+}
