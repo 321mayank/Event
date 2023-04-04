@@ -1,6 +1,6 @@
 const shortid = require('shortid')
-const { loginQuery, registerQuery, organizationCheckQuery, organisationRegisterQuery} = require('../database/query')
-const {connection_sql} = require('../database/sql_connection')
+const { loginQuery, registerQuery, organizationCheckQuery} = require('../database/query')
+const {connectionSql} = require('../database/sql_connection')
 const {hashPassword }= require('../security/password_hash')
 const bcrypt = require('bcrypt')
 const {register_valid }= require('../validation/validation')
@@ -20,13 +20,13 @@ const register = async (req ,res, next) => {
     console.log(passHash)
 
     const checkQuery = `SELECT * FROM user WHERE email='${email}'`
-    connection_sql.query(checkQuery,(err,sql_value)=>{ // checking if email allready exist 
+    connectionSql.query(checkQuery,(err,sql_value)=>{ // checking if email allready exist 
       if (sql_value.length>0) {
         res.send("email allready exist")
       }
       else{
         const insertQuery = registerQuery(userID, name, email, password, passHash, salt);; 
-    connection_sql.query(insertQuery, (err, result) => { // if no error then the insert query will execute and add the user to database
+    connectionSql.query(insertQuery, (err, result) => { // if no error then the insert query will execute and add the user to database
       if (err) throw err;
       console.log("User data inserted successfully");
       
@@ -38,6 +38,13 @@ const register = async (req ,res, next) => {
 
 }
 
+const sessionChecker = (req, res, next) => {
+  if (req.session.userID) {
+    res.redirect("/home");
+  } else {
+    next();
+  }
+};
 
 const login_render = (req ,res ) => {
     res.render('login')
@@ -49,7 +56,8 @@ const login = (req, res) => {
      console.log(email)
      
       const fetchQuery = loginQuery(email);
-      connection_sql.query(fetchQuery, async  (err,result)=>{
+      console.log(fetchQuery)
+      connectionSql.query(fetchQuery, async  (err,result)=>{
         
         if (err) {
           console.log(err);
@@ -66,7 +74,7 @@ const login = (req, res) => {
               req.session.Uname = name
               req.session.email = email
 
-              connection_sql.query(organizationCheckQuery(userID), (err,result)=>{
+              connectionSql.query(organizationCheckQuery(userID), (err,result)=>{
                  
                 if (err) {
                     console.log(err);
@@ -98,6 +106,7 @@ const login = (req, res) => {
 module.exports={
     register_render,
     register,
+    sessionChecker,
     login_render,
     login
 }

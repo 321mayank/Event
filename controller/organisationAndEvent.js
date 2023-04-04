@@ -1,4 +1,4 @@
-const {connection_sql} = require('../database/sql_connection')
+const {connectionSql} = require('../database/sql_connection')
 
 const addOrganisation = (req,res)=>{
     res.render('addOrganisation') 
@@ -20,8 +20,8 @@ const organisation_open = (req ,res)=>{
     const {orgName } = req.params;
     const orgID = req.session.orgID;
     console.log("1st",orgID)
-    const eventCheckQuery = `SELECT * FROM event WHERE orgID='${orgID}'`;
-    connection_sql.query(eventCheckQuery, (err,result)=>{
+    const eventCheckQuery = `SELECT * FROM event WHERE orgID='${orgID}'`
+    connectionSql.query(eventCheckQuery, (err,result)=>{
         if (err) {
             console.log(err);
             res.send('An error occurred'); 
@@ -40,7 +40,7 @@ const eventRegistration = (req,res)=>{
     const orgID = req.session.orgID;
     console.log(orgID)
     const EventRegistrationQuerry = `INSERT INTO event (orgID, event_name) VALUES ('${orgID}','${name}')`
-    connection_sql.query( EventRegistrationQuerry,(err, result)=>{
+    connectionSql.query( EventRegistrationQuerry,(err, result)=>{
       if (err) {
         console.log(err);
         res.send('An error occurred'); 
