@@ -1,1 +1,13 @@
-node_modules/
+node_modules/*
+node_modules
+/.idea/
+.idea/workspace.xml
+.idea/*
+.idea
+.idea/workspace.xml
+.vagrant*
+.vscode
+Vagrantfile
+.nyc_output/
+coverage/
+.env
