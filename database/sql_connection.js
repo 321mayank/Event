@@ -10,3 +10,9 @@ const connectionSql = mysql.createConnection({
 module.exports = {
   connectionSql,
 };
+
+
+//mysql2 
+//orm object relational model - sequalize
+// chai mocha - testing freamework
+//
