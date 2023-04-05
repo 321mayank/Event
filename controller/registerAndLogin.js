@@ -5,11 +5,11 @@ const { connectionSql } = require('../database/sql_connection');
 const { hashPassword } = require('../security/password_hash');
 const { register_valid } = require('../validation/validation');
 
-const register_render = (req, res) => {
+register_render = (req, res) => {
   res.render('register');
 };
 
-  async function register (req, res, next)  {
+async function register(req, res, next) {
   const data = register_valid.body.validate(req.body);
   const { name, email, password } = req.body;
   const salt = await bcrypt.genSalt();
@@ -37,7 +37,7 @@ const register_render = (req, res) => {
       });
     }
   });
-};
+}
 
 const sessionChecker = (req, res, next) => {
   if (req.session.userID) {
