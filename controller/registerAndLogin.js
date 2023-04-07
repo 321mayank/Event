@@ -25,32 +25,16 @@ async function register(req, res, next) {
     userID, name, email, password, salt,passHash
   }
   
-  let checkResult = await user.findOne({ where: { email: email }})
-  if (checkResult > 0) {
+const checkResult = await user.findOne({ where: { email: email }})
+  console.log(checkResult)
+
+  if (checkResult) {
     res.send('email allready exist');
   } else {
     const sendData = await user.create(info)
     res.send('User registerd Successfully');
   }
 
-  // const checkQuery = `SELECT * FROM user WHERE email='${email}'`;
-  // connectionSql.query(checkQuery, (err, sql_value) => {
-  //   // checking if email allready exist
-  //   if (sql_value.length > 0) {
-  //     res.send('email allready exist');
-  //   } else {
-  //     const insertQuery = registerQuery(userID, name, email, password, passHash, salt);
-  //     connectionSql.query(insertQuery, (err, result) => {
-  //       // if no error then the insert query will execute and add the user to database
-  //       if (err) {
-  //         throw err;
-  //       }
-  //       console.log('User data inserted successfully');
-
-  //       res.send('User registerd Successfully');
-  //     });
-  //   }
-  // });
 }
 
 const sessionChecker = (req, res, next) => {
@@ -65,26 +49,38 @@ const login_render = (req, res) => {
   res.render('login');
 };
 
-const login = (req, res) => {
+async function login  (req, res) {
   // const data = login.body.validate(req.body)
   const { email, password } = req.body;
   console.log(email);
 
   const fetchQuery = loginQuery(email);
   console.log(fetchQuery);
-  connectionSql.query(fetchQuery, async (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send('An error occurred');
-    } else if (result.length > 0) {
-      const { userID, name, hash, salt } = result[0];
 
-      const inputHash = await hashPassword(password, salt);
+  const checkResult = await user.findOne({ where: { email: email }})
+   if (checkResult){
+    const { userID, name, passHash , salt } = checkResult;
+    console.log("name",name)
+    const inputHash = await hashPassword(password, salt);
+   
 
-      if (inputHash === hash) {
+
+  // connectionSql.query(fetchQuery, async (err, result) => {
+  //   if (err) {
+  //     console.log(err);
+  //     res.send('An error occurred');
+  //   } else if (result.length > 0) {
+  //     const { userID, name, hash, salt } = result[0];
+
+  //     const inputHash = await hashPassword(password, salt);
+
+      if (inputHash === passHash) {
         req.session.userID = userID;
         req.session.Uname = name;
         req.session.email = email;
+
+
+        
 
         connectionSql.query(organizationCheckQuery(userID), (err, result) => {
           if (err) {
@@ -102,8 +98,7 @@ const login = (req, res) => {
     } else {
       res.send('Email or password is incorrect');
     }
-  });
-};
+  }
 
 module.exports = {
   register_render,
