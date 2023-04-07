@@ -1,9 +1,12 @@
 const shortid = require('shortid');
 const bcrypt = require('bcrypt');
 const { loginQuery, registerQuery, organizationCheckQuery } = require('../database/query');
+const db = require('../models')
 const { connectionSql } = require('../database/sql_connection');
 const { hashPassword } = require('../security/password_hash');
 const { register_valid } = require('../validation/validation');
+
+const user = db.user
 
 register_render = (req, res) => {
   res.render('register');
@@ -15,28 +18,39 @@ async function register(req, res, next) {
   const salt = await bcrypt.genSalt();
   const passHash = await hashPassword(password, salt); // used hashPassword to bcrypt password
   const userID = shortid.generate();
-
   console.log(salt);
   console.log(passHash);
 
-  const checkQuery = `SELECT * FROM user WHERE email='${email}'`;
-  connectionSql.query(checkQuery, (err, sql_value) => {
-    // checking if email allready exist
-    if (sql_value.length > 0) {
-      res.send('email allready exist');
-    } else {
-      const insertQuery = registerQuery(userID, name, email, password, passHash, salt);
-      connectionSql.query(insertQuery, (err, result) => {
-        // if no error then the insert query will execute and add the user to database
-        if (err) {
-          throw err;
-        }
-        console.log('User data inserted successfully');
+  let info = {
+    userID, name, email, password, salt,passHash
+  }
+  
+  let checkResult = await user.findOne({ where: { email: email }})
+  if (checkResult > 0) {
+    res.send('email allready exist');
+  } else {
+    const sendData = await user.create(info)
+    res.send('User registerd Successfully');
+  }
 
-        res.send('User registerd Successfully');
-      });
-    }
-  });
+  // const checkQuery = `SELECT * FROM user WHERE email='${email}'`;
+  // connectionSql.query(checkQuery, (err, sql_value) => {
+  //   // checking if email allready exist
+  //   if (sql_value.length > 0) {
+  //     res.send('email allready exist');
+  //   } else {
+  //     const insertQuery = registerQuery(userID, name, email, password, passHash, salt);
+  //     connectionSql.query(insertQuery, (err, result) => {
+  //       // if no error then the insert query will execute and add the user to database
+  //       if (err) {
+  //         throw err;
+  //       }
+  //       console.log('User data inserted successfully');
+
+  //       res.send('User registerd Successfully');
+  //     });
+  //   }
+  // });
 }
 
 const sessionChecker = (req, res, next) => {
