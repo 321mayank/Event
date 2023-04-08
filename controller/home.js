@@ -4,7 +4,7 @@ const shortid = require('shortid');
 
 const app = express();
 const bodyParser = require('body-parser');
-const { organisationRegisterQuery } = require('../database/query');
+const { requestOrganizationByUserid ,createOrganization } = require('../services/service')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -13,39 +13,39 @@ const organisationRegister_render = (req, res) => {
   res.render('organisationRegister');
 };
 
-const organisationRegister = (req, res) => {
+async function organisationRegister(req, res) {
   const { userID } = req.session;
   console.log(userID);
   const { name, email } = req.body;
   const orgID = shortid.generate();
 
-  connectionSql.query(organisationRegisterQuery(orgID, name, email, userID), (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send('An error occurred');
-    } else {
-      res.redirect('/home');
-    }
-  });
-};
+  const data= {
+    orgID, 
+    name, 
+    email, 
+    userID
 
-const home = (req, res) => {
+  }
+  try{
+  await createOrganization(data)
+  res.redirect('/home');
+  } catch (ex) {
+    res.status(500).send();
+    return;
+  }
+  }
+
+async function home (req, res) {
   const { userID } = req.session;
-  console.log(userID);
-  const fetchQuery1 = `SELECT * FROM organization WHERE userID='${userID}'`;
-  connectionSql.query(fetchQuery1, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send('An error occurred');
-    } else if (result.length > 0) {
+  const result = await requestOrganizationByUserid(userID)
+   if (result) {
       const organizations = result.map(row => ({ orgID: row.orgID, name: row.name }));
       res.render('home', { organizations: result });
       // req.session.orgID = orgID
     } else {
       console.log('No organizations found for this user');
     }
-  });
-};
+  };
 
 module.exports = {
   organisationRegister_render,

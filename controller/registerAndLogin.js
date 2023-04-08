@@ -1,14 +1,17 @@
 const { isEmpty } = require('lodash');
+const express = require('express');
+const app = express();
 const shortid = require('shortid');
 const bcrypt = require('bcrypt');
-const db = require('../models');
 const { hashPassword } = require('../security/password_hash');
 const { userLogin } = require('../validation/user');
-
-const { user } = db;
+const { requestUserdataByEmail ,createUser ,requestOrganizationByUserid } = require('../services/service')
 
 async function register(req, res, next) {
-  const data = register_valid.body.validate(req.body);
+  app.get('/register',(req,res)=>{
+    res.render('register')
+  })
+// const data = register_valid.body.validate(req.body);
   const { name, email, password } = req.body;
   const salt = await bcrypt.genSalt();
   const passHash = await hashPassword(password, salt); // used hashPassword to bcrypt password
@@ -22,13 +25,11 @@ async function register(req, res, next) {
     salt,
     passHash,
   };
-
-  const checkResult = await user.findOne({ where: { email } });
-
+  const checkResult = await requestUserdataByEmail(email)
   if (checkResult) {
     res.send('email allready exist');
   } else {
-    await user.create(info);
+    await createUser(info)
     res.send('User registerd Successfully');
   }
 }
@@ -42,24 +43,28 @@ const sessionChecker = (req, res, next) => {
 };
 
 async function login(req, res) {
+  app.get('/login',(req,res)=>{
+    res.render('login')
+  })
+
   // const data = login.body.validate(req.body)
   const { email, password } = req.body;
-  const { error, value } = userLogin(req.body);
+  // const { error, value } = userLogin(req.body);
 
-  if (error) {
-    res.send('invalid payload');
-    return;
-  }
+  // if (error) {
+  //   res.send('invalid payload');
+  //   return;
+  // }
 
   let result;
   try {
-    result = await user.findOne({ where: { email: value.email } });
+    result = await requestUserdataByEmail(email)
   } catch (ex) {
-    res.statusCode(500).send();
+    res.status(500).send();
     return;
   }
 
-  if (isEmpty(result)) {
+  if (result) {
     const { userID, name, passHash, salt } = result;
     const inputHash = await hashPassword(password, salt);
     if (inputHash === passHash) {
@@ -67,7 +72,7 @@ async function login(req, res) {
       req.session.Uname = name;
       req.session.email = email;
 
-      const checkOrganization = await user.findOne({ where: { userID } });
+      const checkOrganization = await requestOrganizationByUserid(userID)
       if (checkOrganization) {
         res.redirect('/home');
       } else {

@@ -14,6 +14,12 @@ app.get('/', (req, res) => {
   // rendered the login page
   res.render('index');
 });
+app.get('/register',(req,res)=>{
+  res.render('register')
+})
+app.get('/login',(req,res)=>{
+  res.render('login')
+})
 
 app.use('/', registerAndLogin_router);
 

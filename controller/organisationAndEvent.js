@@ -19,7 +19,6 @@ const orgname_redirection = (req, res) => {
 const organisation_open = (req, res) => {
   const { orgName } = req.params;
   const { orgID } = req.session;
-  console.log('1st', orgID);
   const eventCheckQuery = `SELECT * FROM event WHERE orgID='${orgID}'`;
   connectionSql.query(eventCheckQuery, (err, result) => {
     if (err) {
