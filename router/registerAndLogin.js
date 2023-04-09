@@ -3,16 +3,17 @@ const express = require('express');
 const app = express();
 const session = require('express-session');
 
-const registerAndLogin_router = express.Router();
+const registerAndLoginRouter = express.Router();
 
 const {
-  
+  registerRender,
   register,
   sessionChecker,
+  loginRender,
   login,
 } = require('../controller/registerAndLogin');
 
-registerAndLogin_router.use(
+registerAndLoginRouter.use(
   session({
     secret: 'abdjjdirgnkszvvk',
     resave: true,
@@ -20,8 +21,11 @@ registerAndLogin_router.use(
   })
 );
 
-registerAndLogin_router.post('/register', register);
 
-registerAndLogin_router.post('/login',sessionChecker, login);
+registerAndLoginRouter.get('/register', sessionChecker, registerRender);
+registerAndLoginRouter.post('/register', register);
 
-module.exports = registerAndLogin_router;
+registerAndLoginRouter.get('/login', sessionChecker, loginRender);
+registerAndLoginRouter.post('/login' , login);
+
+module.exports = registerAndLoginRouter;

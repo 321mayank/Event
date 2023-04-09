@@ -10,8 +10,8 @@ const {
   eventRegistration,
 } = require('../controller/organisationAndEvent');
 
-const organisationAndEvent_router = express.Router();
-organisationAndEvent_router.use(
+const organisationAndEventRouter = express.Router();
+organisationAndEventRouter.use(
   session({
     secret: 'abdjjdirgnkszvvk',
     resave: true,
@@ -19,14 +19,14 @@ organisationAndEvent_router.use(
   })
 );
 
-organisationAndEvent_router.get('/addOrganisation', addOrganisation);
+organisationAndEventRouter.get('/addOrganisation', addOrganisation);
 
-organisationAndEvent_router.get('/profile', profileView);
+organisationAndEventRouter.get('/profile', profileView);
 
-organisationAndEvent_router.get('/:orgName', orgname_redirection);
+organisationAndEventRouter.get('/:orgName', orgname_redirection);
 
-organisationAndEvent_router.get(`/:name/:orgName`, organisation_open);
+organisationAndEventRouter.get(`/:name/:orgName`, organisation_open);
 
-organisationAndEvent_router.post('/EventRegistration', eventRegistration);
+organisationAndEventRouter.post('/EventRegistration', eventRegistration);
 
-module.exports = organisationAndEvent_router;
+module.exports = organisationAndEventRouter;

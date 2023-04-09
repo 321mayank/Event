@@ -4,10 +4,10 @@ const shortid = require('shortid');
 const app = express();
 const session = require('express-session');
 
-const home_router = express.Router();
+const homeRouter = express.Router();
 const { organisationRegister_render, organisationRegister, home } = require('../controller/home');
 
-home_router.use(
+homeRouter.use(
   session({
     secret: 'abdjjdirgnkszvvk',
     resave: true,
@@ -15,10 +15,10 @@ home_router.use(
   })
 );
 
-home_router.get('/organisation-register', organisationRegister_render);
+homeRouter.get('/organisation-register', organisationRegister_render);
 
-home_router.post('/organisation-register', organisationRegister);
+homeRouter.post('/organisation-register', organisationRegister);
 
-home_router.get('/home', home);
+homeRouter.get('/home', home);
 
-module.exports = home_router;
+module.exports = homeRouter;

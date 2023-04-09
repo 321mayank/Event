@@ -5,13 +5,13 @@ const addOrganisation = (req, res) => {
 };
 
 const profileView = (req, res) => {
-  const name = req.session.Uname;
+  const name = req.session.name;
   const { email } = req.session;
   res.render('profile', { name, email });
 };
 
 const orgname_redirection = (req, res) => {
-  const name = req.session.Uname;
+  const name = req.session.name;
   const { orgName } = req.params;
   res.redirect(`/${name}/${orgName}`);
 };

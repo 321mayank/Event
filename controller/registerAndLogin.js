@@ -1,17 +1,25 @@
-const { isEmpty } = require('lodash');
+const { isEmpty, cloneWith } = require('lodash');
 const express = require('express');
 const app = express();
 const shortid = require('shortid');
 const bcrypt = require('bcrypt');
 const { hashPassword } = require('../security/password_hash');
-const { userLogin } = require('../validation/user');
-const { requestUserdataByEmail ,createUser ,requestOrganizationByUserid } = require('../services/service')
+const { registerData, loginData} = require('../validation/validation')
+const { requestUserdataByEmail ,createUser ,requestOrganizationByUserid } = require('../services/service');
+
+function registerRender(req,res){
+  res.render('register')
+}
 
 async function register(req, res, next) {
-  app.get('/register',(req,res)=>{
-    res.render('register')
-  })
-// const data = register_valid.body.validate(req.body);
+const { error, value } = registerData.body.validate(req.body)
+ if (error) {
+  const errorMessage = error.details[0].message;
+  console.log(errorMessage);
+  res.send(errorMessage);
+    return;
+  } else {
+
   const { name, email, password } = req.body;
   const salt = await bcrypt.genSalt();
   const passHash = await hashPassword(password, salt); // used hashPassword to bcrypt password
@@ -32,29 +40,32 @@ async function register(req, res, next) {
     await createUser(info)
     res.send('User registerd Successfully');
   }
+ }
 }
 
 const sessionChecker = (req, res, next) => {
-  if (req.session.userID) {
+   const userid = req.session.userID
+  if (userid) {
     res.redirect('/home');
   } else {
     next();
   }
 };
 
+function loginRender(req,res){
+  res.render('login')
+}
+
+
 async function login(req, res) {
-  app.get('/login',(req,res)=>{
-    res.render('login')
-  })
-
-  // const data = login.body.validate(req.body)
-  const { email, password } = req.body;
-  // const { error, value } = userLogin(req.body);
-
-  // if (error) {
-  //   res.send('invalid payload');
-  //   return;
-  // }
+const { error, value } = loginData.body.validate(req.body)
+  if (error) {
+   const errorMessage = error.details[0].message;
+   console.log(errorMessage);
+   res.send(errorMessage);
+     return;
+   } else {
+    const { email, password } = req.body;
 
   let result;
   try {
@@ -69,7 +80,7 @@ async function login(req, res) {
     const inputHash = await hashPassword(password, salt);
     if (inputHash === passHash) {
       req.session.userID = userID;
-      req.session.Uname = name;
+      req.session.name = name;
       req.session.email = email;
 
       const checkOrganization = await requestOrganizationByUserid(userID)
@@ -85,9 +96,12 @@ async function login(req, res) {
     res.send('Email or password is incorrect');
   }
 }
+}
 
 module.exports = {
+  registerRender,
   register,
   sessionChecker,
+  loginRender,
   login,
 };

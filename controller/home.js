@@ -39,8 +39,15 @@ async function home (req, res) {
   const { userID } = req.session;
   const result = await requestOrganizationByUserid(userID)
    if (result) {
-      const organizations = result.map(row => ({ orgID: row.orgID, name: row.name }));
-      res.render('home', { organizations: result });
+
+    const organizationData = result.get({ plain: true });
+   const organizations = Array.isArray(organizationData)
+  ? organizationData.map(row => ({ orgID: row.orgID, name: row.name }))
+  : [organizationData].map(row => ({ orgID: row.orgID, name: row.name }));
+
+    // const organizations = result.get({ plain: true }).map(row => ({ orgID: row.orgID, name: row.name }));
+
+      res.render('home', { organizations: organizations });
       // req.session.orgID = orgID
     } else {
       console.log('No organizations found for this user');

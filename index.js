@@ -2,9 +2,9 @@ const express = require('express');
 
 const app = express();
 const bodyParser = require('body-parser');
-const registerAndLogin_router = require('./router/registerAndLogin');
-const home_router = require('./router/home');
-const organisationAndEvent_router = require('./router/organisationAndEvent');
+const registerAndLoginRouter = require('./router/registerAndLogin');
+const homeRouter = require('./router/home');
+const organisationAndEventRouter = require('./router/organisationAndEvent');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -14,20 +14,16 @@ app.get('/', (req, res) => {
   // rendered the login page
   res.render('index');
 });
-app.get('/register',(req,res)=>{
-  res.render('register')
-})
+
 app.get('/login',(req,res)=>{
   res.render('login')
 })
 
-app.use('/', registerAndLogin_router);
+app.use('/', registerAndLoginRouter);
 
-app.use('/', home_router);
-app.use('/', organisationAndEvent_router);
-// app.get('/:name/home',(req,res)=>{
-//   res.render('home')
-// })
+app.use('/', homeRouter);
+app.use('/', organisationAndEventRouter);
+
 
 app.listen(3000, () => {
   console.log('Server listening on port 3000');
