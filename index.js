@@ -22,9 +22,12 @@ app.get('/login',(req,res)=>{
 app.use('/', registerAndLoginRouter);
 
 app.use('/', homeRouter);
+
 app.use('/', organisationAndEventRouter);
 
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
+
+app.server = server;

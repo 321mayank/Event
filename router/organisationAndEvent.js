@@ -5,9 +5,9 @@ const session = require('express-session');
 const {
   addOrganisation,
   profileView,
-  orgname_redirection,
-  organisation_open,
   eventRegistration,
+  eventRegistrationRender,
+  getEvent
 } = require('../controller/organisationAndEvent');
 
 const organisationAndEventRouter = express.Router();
@@ -23,10 +23,10 @@ organisationAndEventRouter.get('/addOrganisation', addOrganisation);
 
 organisationAndEventRouter.get('/profile', profileView);
 
-organisationAndEventRouter.get('/:orgName', orgname_redirection);
+organisationAndEventRouter.get('/EventRegistration/:orgName',eventRegistrationRender)
 
-organisationAndEventRouter.get(`/:name/:orgName`, organisation_open);
+organisationAndEventRouter.post('/EventRegistration',eventRegistration);
 
-organisationAndEventRouter.post('/EventRegistration', eventRegistration);
+organisationAndEventRouter.get('/events/:orgName', getEvent )
 
 module.exports = organisationAndEventRouter;

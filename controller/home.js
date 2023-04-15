@@ -4,12 +4,13 @@ const shortid = require('shortid');
 
 const app = express();
 const bodyParser = require('body-parser');
-const { requestOrganizationByUserid ,createOrganization } = require('../services/service')
+const { requestOrganizationByUserid ,createOrganization } = require('../services/service');
+const { func } = require('joi');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const organisationRegister_render = (req, res) => {
+const organisationRegisterRender = (req, res) => {
   res.render('organisationRegister');
 };
 
@@ -35,27 +36,21 @@ async function organisationRegister(req, res) {
   }
   }
 
-async function home (req, res) {
-  const { userID } = req.session;
-  const result = await requestOrganizationByUserid(userID)
-   if (result) {
-
-    const organizationData = result.get({ plain: true });
-   const organizations = Array.isArray(organizationData)
-  ? organizationData.map(row => ({ orgID: row.orgID, name: row.name }))
-  : [organizationData].map(row => ({ orgID: row.orgID, name: row.name }));
-
-    // const organizations = result.get({ plain: true }).map(row => ({ orgID: row.orgID, name: row.name }));
-
+  async function home (req, res) {
+    const { userID } = req.session;
+    const results = await requestOrganizationByUserid(userID);
+    if (results.length > 0) {
+      const organizationData = results.map(result => result.get({ plain: true }));
+      const organizations = organizationData.map(row => ({ orgID: row.orgID, name: row.name }));
       res.render('home', { organizations: organizations });
-      // req.session.orgID = orgID
     } else {
       console.log('No organizations found for this user');
     }
   };
 
+
 module.exports = {
-  organisationRegister_render,
+  organisationRegisterRender,
   organisationRegister,
   home,
 };

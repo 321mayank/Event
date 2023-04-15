@@ -19,7 +19,7 @@
     <select id="org-dropdown">
       <option value="" selected disabled>- Select the organizations -</option>
       <% organizations.forEach(org => { %>
-        <option value="<%= org.name %>"><%= org.name %></option>
+        <option value="<%= org.orgID + ':' + org.name %>"><%= org.name %></option>
       <% }) %>
     </select>
     
@@ -27,10 +27,13 @@
     <script>
       const dropdown = document.getElementById('org-dropdown');
       dropdown.addEventListener('change', (event) => {
-        const orgName = event.target.value;
+        const{orgID, orgName }  = event.target.value.split(':');
+        orgID = orgID;
+
         window.location.href = `/${orgName}`;
-      });
+        });
     </script>
+    
 
     <a href="./addOrganisation">Add a Organisation</a>
     <br>

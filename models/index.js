@@ -41,6 +41,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.user = require('./user.js')(sequelize, DataTypes)
 db.organization = require('./organization.js')(sequelize, DataTypes)
+db.event = require('./event.js')(sequelize, DataTypes)
 
 db.sequelize.sync({ force: false })
 .then(() => {

@@ -1,56 +1,79 @@
-const { connectionSql } = require('../database/sql_connection');
+const { name } = require('ejs');
+const url = require("url");
+const { getOrganisationEventByOrgName ,creatEvent} = require('../services/service');
+const path = require('path');
+const { lastIndexOf } = require('lodash');
 
-const addOrganisation = (req, res) => {
+function addOrganisation  (req, res)  {
   res.render('addOrganisation');
 };
 
-const profileView = (req, res) => {
+function profileView  (req, res) {
   const name = req.session.name;
   const { email } = req.session;
-  res.render('profile', { name, email });
+  res.render('profile', { name, email }); 
 };
 
-const orgname_redirection = (req, res) => {
-  const name = req.session.name;
-  const { orgName } = req.params;
-  res.redirect(`/${name}/${orgName}`);
+// const orgnameRedirection = (req, res) => {
+//   const name = req.session.name;
+//   const { orgName } = req.params;
+//   res.redirect(`/${name}/${orgName}`);
+// };
+
+// async function organisationOpen  (req, res) {
+//   const name = req.params.name;
+//   const result = await requestEventDataByorgID(name)
+   
+//   if (result.length > 0) {
+//       res.send('Event allready registered');
+//     } else {
+//       res.render('EventRegistration');
+//     }
+//   }
+
+function eventRegistrationRender (req,res) {
+  const orgName = req.params.orgName; 
+  req.session.orgName = orgName;
+  res.render('EventRegistration')
+
+}
+
+async function eventRegistration (req, res, next)  {
+  orgName = req.session.orgName
+ const { eventName } = req.body
+  const info ={ orgName , eventName }
+  let result;
+  try {
+   result = await creatEvent(info)
+  }
+  catch(ex){
+    res.send("error")
+  }
+  if (result){
+    res.send("Event Registered")
+  }
+  else{
+    res.send("next page")
+  }
 };
 
-const organisation_open = (req, res) => {
-  const { orgName } = req.params;
-  const { orgID } = req.session;
-  const eventCheckQuery = `SELECT * FROM event WHERE orgID='${orgID}'`;
-  connectionSql.query(eventCheckQuery, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send('An error occurred');
-    } else if (result.length > 0) {
-      res.send('h');
-    } else {
-      res.render('EventRegistration');
-    }
-  });
-};
+async function getEvent (req,res) {
+const orgName = req.params.orgName;  
+let result;
+try{
+  result = await getOrganisationEventByOrgName(orgName)
+  res.send(result)
+}
+catch(ex){
+  res.send("Cannot get the event data ")
+}
 
-const eventRegistration = (req, res) => {
-  const { name } = req.body;
-  const { orgID } = req.session;
-  console.log(orgID);
-  const EventRegistrationQuerry = `INSERT INTO event (orgID, event_name) VALUES ('${orgID}','${name}')`;
-  connectionSql.query(EventRegistrationQuerry, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.send('An error occurred');
-    } else {
-      res.send('success');
-    }
-  });
-};
 
+}
 module.exports = {
   addOrganisation,
   profileView,
-  orgname_redirection,
-  organisation_open,
+  eventRegistrationRender,
   eventRegistration,
+  getEvent
 };
