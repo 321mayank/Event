@@ -1,6 +1,6 @@
 const { name } = require('ejs');
 const url = require("url");
-const { getOrganisationEventByOrgName ,creatEvent} = require('../services/service');
+const { getOrganisationEventByOrgName ,creatEvent ,requestOrganizationByUserid} = require('../services/service');
 const path = require('path');
 const { lastIndexOf } = require('lodash');
 
@@ -31,9 +31,32 @@ function profileView  (req, res) {
 //     }
 //   }
 
-function eventRegistrationRender (req,res) {
+async function eventRegistrationRender (req,res) {
   const orgName = req.params.orgName; 
   req.session.orgName = orgName;
+  const userID = req.session.userID;
+  let data;
+  try{
+    data = await requestOrganizationByUserid(userID)
+  }
+  catch(ex){
+    res.send("Cannot get the organisation data by userID ")
+  }
+  
+  if (data) {
+    const nameToMatch = orgName; 
+    const foundName = data.find(org => org.name === nameToMatch);
+  
+    if (foundName) {
+      res.render('EventRegistration')
+    } else {
+      
+      console.log('Name not found!');
+      res.send("Organisation does not exist ")
+  
+    }
+  }
+
   res.render('EventRegistration')
 
 }
@@ -59,13 +82,35 @@ async function eventRegistration (req, res, next)  {
 
 async function getEvent (req,res) {
 const orgName = req.params.orgName;  
-let result;
+const userID = req.session.userID;
+console.log(userID)
+let data;
 try{
-  result = await getOrganisationEventByOrgName(orgName)
-  res.send(result)
+  data = await requestOrganizationByUserid(userID)
 }
 catch(ex){
-  res.send("Cannot get the event data ")
+  res.send("Cannot get the organisation data by userID ")
+}
+
+if (data) {
+  const nameToMatch = orgName; 
+  const foundName = data.find(org => org.name === nameToMatch);
+
+  if (foundName) {
+    let result;
+    try{
+      result = await getOrganisationEventByOrgName(orgName)
+      res.send(result)
+    }
+    catch(ex){
+      res.send("Cannot get the event data ")
+    }
+  } else {
+   
+    console.log('Name not found!');
+    res.send("Organisation does not exist ")
+
+  }
 }
 
 

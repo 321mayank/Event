@@ -1,6 +1,5 @@
 const { describe, it } = require('mocha');
-const chai = require('chai');
-const expect = chai.expect;
+const { expect} = require('chai');
 const { loginData } = require('../validation/validation');
 
 describe('Joi Validation Tests', () => {

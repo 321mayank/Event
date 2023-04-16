@@ -15,7 +15,7 @@ async function createUser(info) {
   }
 
 async function requestOrganizationByUserid(userID) {
-    const foundorganization = await organization.findAll({ where: { userID } });
+    const foundorganization = await organization.findAll({ where: { userID },attributes: ['name'] });
     return foundorganization;
   }
 
@@ -28,6 +28,7 @@ async function createOrganization(data) {
   const foundevent = await event.findAll({ where: { orgName },attributes: ['eventName'] })
   return foundevent
 }
+
 
 
 async function creatEvent(data) {
