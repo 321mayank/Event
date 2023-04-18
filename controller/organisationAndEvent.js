@@ -14,23 +14,6 @@ function profileView  (req, res) {
   res.render('profile', { name, email }); 
 };
 
-// const orgnameRedirection = (req, res) => {
-//   const name = req.session.name;
-//   const { orgName } = req.params;
-//   res.redirect(`/${name}/${orgName}`);
-// };
-
-// async function organisationOpen  (req, res) {
-//   const name = req.params.name;
-//   const result = await requestEventDataByorgID(name)
-   
-//   if (result.length > 0) {
-//       res.send('Event allready registered');
-//     } else {
-//       res.render('EventRegistration');
-//     }
-//   }
-
 async function eventRegistrationRender (req,res) {
   const orgName = req.params.orgName; 
   req.session.orgName = orgName;

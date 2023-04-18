@@ -3,22 +3,38 @@ const express = require('express');
 const app = express();
 const shortid = require('shortid');
 const bcrypt = require('bcrypt');
-const { hashPassword } = require('../security/password_hash');
+const crypto = require('crypto');
+const { hashPassword ,hash} = require('../security/password_hash');
 const { registerData, loginData} = require('../validation/validation')
 const { requestUserdataByEmail ,createUser ,requestOrganizationByUserid } = require('../services/service');
+
+
+
+function sessionChecker  (req, res, next) {
+   const userid = req.session.userID
+   console.log(userid)
+  if (userid) {
+    res.redirect('/home');
+  } else {
+    next();
+  }
+};
 
 function registerRender(req,res){
   res.render('register')
 }
 
 async function register(req, res, next) {
-const { error, value } = registerData.body.validate(req.body)
+
+const { error, value } = registerData.body.validate(req.body) // validation
  if (error) {
   const errorMessage = error.details[0].message;
   console.log(errorMessage);
   res.send(errorMessage);
     return;
-  } else {
+  } else { // api key Generation
+  const apiKey = crypto.randomBytes(32).toString('hex');
+  hashedApi = hash(apiKey)
 
   const { name, email, password } = req.body;
   const salt = await bcrypt.genSalt();
@@ -32,7 +48,9 @@ const { error, value } = registerData.body.validate(req.body)
     password,
     salt,
     passHash,
-  };
+    apiKey,
+    hashedApi
+};
   const checkResult = await requestUserdataByEmail(email)
   if (checkResult) {
     res.send('email allready exist');
@@ -43,17 +61,11 @@ const { error, value } = registerData.body.validate(req.body)
  }
 }
 
-const sessionChecker = (req, res, next) => {
-   const userid = req.session.userID
-  if (userid) {
-    res.redirect('/home');
-  } else {
-    next();
-  }
-};
 
-function loginRender(req,res){
+
+function loginRender(req,res,next){
   res.render('login')
+  next()
 }
 
 

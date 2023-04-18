@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
         passHash: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        apiKey: {
+            type: DataTypes.STRING
+        },
+        hashedApi: {
+            type: DataTypes.BLOB 
         }
      
     

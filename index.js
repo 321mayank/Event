@@ -15,22 +15,26 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/login',(req,res)=>{
-  res.render('login')
-})
-
 app.use('/', registerAndLoginRouter);
 
 app.use('/', homeRouter);
 
 app.use('/', organisationAndEventRouter);
 
-
+app.all('*',(req,res)=>{
+  res.sendStatus(404)
+})
 const server = app.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
+
+app.use(  (err,req,res,next)=> {
+
+
+})
 
 app.server = server;
 
 
 //jwt token
+//localhost/v1/example

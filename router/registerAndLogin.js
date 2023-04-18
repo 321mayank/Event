@@ -13,6 +13,8 @@ const {
   login,
 } = require('../controller/registerAndLogin');
 
+const { sendEmail } = require('../controller/mail')
+
 registerAndLoginRouter.use(
   session({
     secret: 'abdjjdirgnkszvvk',
@@ -22,10 +24,16 @@ registerAndLoginRouter.use(
 );
 
 
-registerAndLoginRouter.get('/register', sessionChecker, registerRender);
-registerAndLoginRouter.post('/register', register);
+registerAndLoginRouter.get('/register', sessionChecker ,registerRender,);
+registerAndLoginRouter.post('/register', register ,sendEmail);
 
-registerAndLoginRouter.get('/login', sessionChecker, loginRender);
-registerAndLoginRouter.post('/login' , login);
+registerAndLoginRouter.get('/sendEmail', sendEmail);
+
+registerAndLoginRouter.get('/login', async (req,res,next) =>{
+  res.send(200)
+} );
+registerAndLoginRouter.post('/login' ,sessionChecker, login);
+
+
 
 module.exports = registerAndLoginRouter;
