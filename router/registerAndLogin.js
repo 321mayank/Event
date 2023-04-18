@@ -25,13 +25,11 @@ registerAndLoginRouter.use(
 
 
 registerAndLoginRouter.get('/register', sessionChecker ,registerRender,);
-registerAndLoginRouter.post('/register', register ,sendEmail);
+registerAndLoginRouter.post('/register', register);
 
 registerAndLoginRouter.get('/sendEmail', sendEmail);
 
-registerAndLoginRouter.get('/login', async (req,res,next) =>{
-  res.send(200)
-} );
+registerAndLoginRouter.get('/login',sessionChecker ,loginRender );
 registerAndLoginRouter.post('/login' ,sessionChecker, login);
 
 

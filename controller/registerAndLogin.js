@@ -40,7 +40,7 @@ const { error, value } = registerData.body.validate(req.body) // validation
   const salt = await bcrypt.genSalt();
   const passHash = await hashPassword(password, salt); // used hashPassword to bcrypt password
   const userID = shortid.generate();
-
+  req.session.regEmail = email;
   const info = {
     userID,
     name,
@@ -56,7 +56,7 @@ const { error, value } = registerData.body.validate(req.body) // validation
     res.send('email allready exist');
   } else {
     await createUser(info)
-    res.send('User registerd Successfully');
+    res.redirect('/sendEmail');
   }
  }
 }
