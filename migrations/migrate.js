@@ -2,13 +2,13 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.changeColumn('users', 'hashedApi', {
-      type: Sequelize.BINARY
+      type: Sequelize.STRING
     });
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.changeColumn('users', 'hashedApi', {
-      type: Sequelize.STRING
+      type: Sequelize.BLOB
     });
   }
 };

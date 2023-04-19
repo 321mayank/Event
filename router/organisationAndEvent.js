@@ -9,6 +9,7 @@ const {
   eventRegistrationRender,
   getEvent
 } = require('../controller/organisationAndEvent');
+const { authenticateApiKey }= require('../controller/apiKeyAuth')
 
 const organisationAndEventRouter = express.Router();
 organisationAndEventRouter.use(
@@ -19,14 +20,14 @@ organisationAndEventRouter.use(
   })
 );
 
-organisationAndEventRouter.get('/addOrganisation', addOrganisation);
+organisationAndEventRouter.get('/addOrganisation',authenticateApiKey , addOrganisation);
 
-organisationAndEventRouter.get('/profile', profileView);
+organisationAndEventRouter.get('/profile',authenticateApiKey , profileView);
 
-organisationAndEventRouter.get('/EventRegistration/:orgName',eventRegistrationRender)
+organisationAndEventRouter.get('/EventRegistration/:orgName',authenticateApiKey, eventRegistrationRender)
 
-organisationAndEventRouter.post('/EventRegistration',eventRegistration);
+organisationAndEventRouter.post('/EventRegistration',authenticateApiKey, eventRegistration);
 
-organisationAndEventRouter.get('/events/:orgName', getEvent )
+organisationAndEventRouter.get('/events/:orgName',authenticateApiKey, getEvent )
 
 module.exports = organisationAndEventRouter;

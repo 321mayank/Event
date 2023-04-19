@@ -88,13 +88,13 @@ const { error, value } = loginData.body.validate(req.body)
   }
 
   if (result) {
-    const { userID, name, passHash, salt } = result;
+    const { userID, name, passHash, salt ,hashedApi } = result;
     const inputHash = await hashPassword(password, salt);
     if (inputHash === passHash) {
       req.session.userID = userID;
       req.session.name = name;
       req.session.email = email;
-
+      req.session.apiKey = hashedApi
       const checkOrganization = await requestOrganizationByUserid(userID)
       if (checkOrganization) {
         res.redirect('/home');

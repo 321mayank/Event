@@ -6,10 +6,10 @@ const hashPassword = async (password, salt) => {
   return await bcrypt.hash(password, salt);
 };
 
-  const hash = (value) =>{
-  const algorithm = 'sha512';
+const hash = (value) =>{
+  const algorithm = 'sha256';
    const secret = "mysecretkey";
-   return crypto.createHmac(algorithm, secret).update(value).digest (' hex');
+   return crypto.createHmac(algorithm, secret).update(value).digest ('hex');
 
 };
 

@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         },
         hashedApi: {
-            type: DataTypes.BLOB 
+            type: DataTypes.STRING 
         }
      
     

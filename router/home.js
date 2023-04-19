@@ -23,3 +23,7 @@ homeRouter.get('/home', home);
 
 
 module.exports = homeRouter;
+
+
+//auth if (api)
+// get user data
