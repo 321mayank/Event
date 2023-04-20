@@ -1,11 +1,8 @@
 const express = require('express');
-const shortid = require('shortid');
-
-const app = express();
 const session = require('express-session');
 
 const homeRouter = express.Router();
-const { organisationRegisterRender, organisationRegister, home } = require('../controller/home');
+const { home } = require('../../controller/home/home');
 
 homeRouter.use(
   session({
@@ -15,9 +12,7 @@ homeRouter.use(
   })
 );
 
-homeRouter.get('/organisation-register', organisationRegisterRender);
 
-homeRouter.post('/organisation-register', organisationRegister);
 
 homeRouter.get('/home', home);
 
