@@ -46,7 +46,7 @@ async function login(req, res) {
         req.session.apiKey = hashedApi
 
         // Setup redis
-        client.setEx("apikey",3600,hashedApi)
+        // client.setEx("apikey",3600,hashedApi)
 
         // Check if user is associated with an organization
         const checkOrganization = await requestOrganizationByUserid(userID)

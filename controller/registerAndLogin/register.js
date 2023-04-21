@@ -2,7 +2,7 @@
 const shortid = require('shortid');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const { registerData} = require('../../validation/validation')
+const { registerData } = require('../../validation/validation')
 const { hashPassword ,hash} = require('../../security/password_hash');
 const { requestUserdataByEmail ,createUser } = require('../../services/service');
 

@@ -56,7 +56,7 @@ async function eventRegistration (req, res, next)  {
   }
   else{
     // If there is an error, send an error message
-    res.send("next page")
+    res.send("Event Registered ")
   }
 };
 

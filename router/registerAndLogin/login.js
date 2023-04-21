@@ -2,6 +2,14 @@ const express = require('express');
 const session = require('express-session');
 const loginRouter = express.Router()
 
+loginRouter.use(
+  session({
+    secret: 'abdjjdirgnkszvvk',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
 const {
   loginRender,
   login,

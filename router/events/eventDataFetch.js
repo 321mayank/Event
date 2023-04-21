@@ -15,4 +15,6 @@ eventRouter.use(
 );
 
 
-eventRouter.get('/events/:orgName',authenticateApiKey, getEvent )
+eventRouter.get('/events/:orgName',authenticateApiKey, getEvent );
+
+module.exports = eventRouter;

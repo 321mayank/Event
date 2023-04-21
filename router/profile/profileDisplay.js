@@ -13,6 +13,6 @@ profileRouter.use(
   })
 );
 
-profileRouter.get('/profile',authenticateApiKey , profileView);
+profileRouter.get('/profile', authenticateApiKey ,profileView);
 
 module.exports= profileRouter;

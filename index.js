@@ -6,6 +6,9 @@ const registerRouter = require('./router/registerAndLogin/Register');
 const loginRouter = require('./router/registerAndLogin/login');
 const homeRouter = require('./router/home/home');
 const organisationRegisterRouter = require('./router/organisation/organisationRegister');
+const profileRouter = require('./router/profile/profileDisplay')
+const eventRegisterRouter = require('./router/events/eventRegistration')
+const eventRouter = require('./router/events/eventDataFetch')
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,11 +23,17 @@ app.get('/', (req, res) => {
 
 app.use('/', registerRouter);
 
-app.use('/', loginRouter);
+app.use('/login', loginRouter);
 
 app.use('/', homeRouter);
 
 app.use('/', organisationRegisterRouter);
+
+app.use('/',profileRouter);
+
+app.use('/', eventRegisterRouter);
+
+app.use('/', eventRouter);
 
 app.all('*',(req,res)=>{
   res.sendStatus(404)
